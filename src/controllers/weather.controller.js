@@ -1,8 +1,17 @@
 import axios from "axios"
 import Weather from "../models/weather.model.js"
+import History from "../models/history.model.js"
+import User from "../models/user.model.js"
 
 export const getWeather = async (req, res) => {
     try {
+
+        const user = req.user
+
+        console.log(user)
+
+        // console.log(req.user._id) // new ObjectId('685566541729148e410583bc')
+        // console.log(req.user.id) // 685566541729148e410583bc
 
         const { lat, lon } = req.query
 
@@ -48,10 +57,20 @@ export const getWeather = async (req, res) => {
                 // update the cached weather
                 await Weather.findByIdAndUpdate(checWeather._id, newWeather, { new: true });
                 
+
+                const history = new History({
+                    user: user,
+                    weather: newWeather
+                })
+        
+                await history.save();
+
                 // return the api weather
                 res.status(200).json(openWeather)
                 return
             }
+
+            // add to history
 
             // return the cached weather
             res.status(200).json(checWeather.data);

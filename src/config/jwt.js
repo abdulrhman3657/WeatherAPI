@@ -1,5 +1,5 @@
 export const jwtConfig = {
-  secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key',
+  secret: process.env.JWT_SECRET || 'key123456',
   accessToken: {
     options: {
       expiresIn: '15m',

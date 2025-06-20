@@ -74,8 +74,6 @@ export const signin = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email:email });
-
-        console.log(user)
         
         if (!user) {
             res.status(401).json({ message: "invalid email or password" });
@@ -88,8 +86,6 @@ export const signin = async (req, res) => {
             res.status(401).json({ message: "Invalid credentials" });
             return
         }
-
-        console.log(user)
 
         const { accessToken, refreshToken } = await generateTokens(user)
 
