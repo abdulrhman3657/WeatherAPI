@@ -8,7 +8,7 @@ export const getWeather = async (req, res) => {
 
         const user = req.user
 
-        console.log(user)
+        console.log(user.email)
 
         // console.log(req.user._id) // new ObjectId('685566541729148e410583bc')
         // console.log(req.user.id) // 685566541729148e410583bc
@@ -43,43 +43,40 @@ export const getWeather = async (req, res) => {
 
         // check if the weather is aleardy stored
         const checWeather = await Weather.findOne({ lat:lat, lon:lon });
-                
+
         if (checWeather) {
+
+            const history = new History({
+                user: user,
+                weather: checWeather._id
+            })
+            await history.save();
 
             // elapsed time in minutes
             const elapsedTime = ( new Date() - checWeather.fetchedAt ) / (1000 * 60)
 
             // if the cached weather date is more than 30 minutes (old)
-            if(elapsedTime > 30){
-
-                const newWeather = cachedWeather
-
+            if(elapsedTime >= 30){
                 // update the cached weather
-                await Weather.findByIdAndUpdate(checWeather._id, newWeather, { new: true });
-                
-
-                const history = new History({
-                    user: user,
-                    weather: newWeather
-                })
-        
-                await history.save();
-
+                await Weather.findByIdAndUpdate(checWeather._id, cachedWeather, { new: true });
                 // return the api weather
                 res.status(200).json(openWeather)
                 return
+            } else {
+                // return the cached weather
+                res.status(200).json(checWeather.data);
+                return
             }
-
-            // add to history
-
-            // return the cached weather
-            res.status(200).json(checWeather.data);
-            return
         }
         
         const storeWeather = new Weather(cachedWeather)
-
         await storeWeather.save();
+
+        const history = new History({
+            user: user,
+            weather: storeWeather._id
+        })
+        await history.save();
 
         // return the api weather
         res.status(200).json(openWeather)
