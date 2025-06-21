@@ -23,21 +23,21 @@ export const getWeather = async (req, res) => {
         const weatherAPI = weather.data
 
         const openWeather = {
-            "source": "openweather",
-            "coordinates": { "lat":weatherAPI.coord.lat, "lon":weatherAPI.coord.lon },
-            "tempC": weatherAPI.main.temp,
-            "humidity": weatherAPI.main.humidity,
-            "description": weatherAPI.weather[0].description,
-            "fetchedAt": new Date()
+            source: "openweather",
+            coordinates: { "lat":weatherAPI.coord.lat, "lon":weatherAPI.coord.lon },
+            tempC: weatherAPI.main.temp,
+            humidity: weatherAPI.main.humidity,
+            description: weatherAPI.weather[0].description,
+            fetchedAt: new Date()
         }
 
         const cachedWeather = {
-            "source": "cache",
-            "coordinates": { "lat":weatherAPI.coord.lat, "lon":weatherAPI.coord.lon },
-            "tempC": weatherAPI.main.temp,
-            "humidity": weatherAPI.main.humidity,
-            "description": weatherAPI.weather[0].description,
-            "fetchedAt": new Date()
+            source: "cache",
+            coordinates: { "lat":weatherAPI.coord.lat, "lon":weatherAPI.coord.lon },
+            tempC: weatherAPI.main.temp,
+            humidity: weatherAPI.main.humidity,
+            description: weatherAPI.weather[0].description,
+            fetchedAt: new Date()
         }
 
         // check if the weather is aleardy stored
