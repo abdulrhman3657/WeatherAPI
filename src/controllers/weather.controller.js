@@ -1,7 +1,6 @@
 import axios from "axios"
 import Weather from "../models/weather.model.js"
 import History from "../models/history.model.js"
-import User from "../models/user.model.js"
 
 export const getWeather = async (req, res) => {
     try {
@@ -44,12 +43,18 @@ export const getWeather = async (req, res) => {
         // check if the weather is aleardy stored
         const checWeather = await Weather.findOne({ lat:lat, lon:lon });
 
+        console.log(checWeather)
+
         if (checWeather) {
 
             const history = new History({
-                user: user,
-                weather: checWeather._id
+                user: user._id,
+                weather: checWeather._id,
+                lat: weatherAPI.coord.lat,
+                lon: weatherAPI.coord.lon,
+                requestedAt: new Date()
             })
+
             await history.save();
 
             // elapsed time in minutes
@@ -68,13 +73,21 @@ export const getWeather = async (req, res) => {
                 return
             }
         }
-        
-        const storeWeather = new Weather(cachedWeather)
+
+        const storeWeather = new Weather({
+              lat: weatherAPI.coord.lat,
+              lon: weatherAPI.coord.lon,
+              data: cachedWeather,
+              fetchedAt: new Date(),
+        })
         await storeWeather.save();
 
         const history = new History({
-            user: user,
-            weather: storeWeather._id
+            user: user._id,
+            weather: storeWeather._id,
+            lat: weatherAPI.coord.lat,
+            lon: weatherAPI.coord.lon,
+            requestedAt: new Date()
         })
         await history.save();
 
